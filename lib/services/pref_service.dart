@@ -14,6 +14,7 @@ class PrefService {
   }
 
   int get openCount => _prefs.getInt(_kOpenCount) ?? 0;
+  Set<String> get debugKeys => _prefs.getKeys();
 
   Future<void> increaseOpenCount() async {
     final saved = await _prefs.setInt(_kOpenCount, openCount + 1);
@@ -50,5 +51,10 @@ class PrefService {
     }
   }
 
-  Future<void> clearProfile() => _prefs.remove(_kProfile);
+  Future<void> clearProfile() async {
+    final removed = await _prefs.remove(_kProfile);
+    if (!removed) {
+      throw StateError('Data profil gagal dihapus.');
+    }
+  }
 }

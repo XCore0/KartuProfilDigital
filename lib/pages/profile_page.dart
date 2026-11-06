@@ -51,6 +51,23 @@ class _ProfilePageState extends State<ProfilePage> {
         .showSnackBar(const SnackBar(content: Text('Profil tersimpan')));
   }
 
+  Future<void> _reset() async {
+    try {
+      await widget.prefs.clearProfile();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Profil gagal direset: $error')));
+      return;
+    }
+    if (!mounted) return;
+    setState(() => _profile = widget.prefs.profile);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profil dikembalikan ke bawaan')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -101,6 +118,11 @@ class _ProfilePageState extends State<ProfilePage> {
             title: const Text('Mode Gelap'),
             value: widget.isDark,
             onChanged: widget.onThemeChanged,
+          ),
+          OutlinedButton.icon(
+            onPressed: _reset,
+            icon: const Icon(Icons.restore),
+            label: const Text('Reset Profil'),
           ),
           const SizedBox(height: 24),
           Center(

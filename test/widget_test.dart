@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:kartu_profil_digital/main.dart';
+import 'package:kartu_profil_digital/models/profile_data.dart';
 import 'package:kartu_profil_digital/services/pref_service.dart';
 
 void main() {
@@ -109,6 +110,38 @@ void main() {
     expect(find.text('Nama Baru'), findsOneWidget);
     expect(find.text('Desainer'), findsOneWidget);
     expect(find.text('Bio yang sudah diperbarui.'), findsOneWidget);
+  });
+
+  testWidgets('reset mengembalikan profil bawaan tanpa menghapus data lain', (
+    WidgetTester tester,
+  ) async {
+    final prefs = await PrefService.init();
+    await prefs.increaseOpenCount();
+    await prefs.setDarkMode(true);
+    await prefs.saveProfile(
+      const ProfileData(
+        name: 'Nama Ubah',
+        title: 'Jabatan Ubah',
+        bio: 'Bio Ubah',
+      ),
+    );
+    expect(
+      prefs.debugKeys,
+      containsAll(['open_count', 'is_dark_mode', 'profile_data']),
+    );
+
+    await tester.pumpWidget(MyApp(prefs: prefs));
+    await tester.tap(find.text('Reset Profil'));
+    await tester.pumpAndSettle();
+
+    expect(find.text(ProfileData.defaults.name), findsOneWidget);
+    expect(find.text(ProfileData.defaults.title), findsOneWidget);
+    expect(find.text(ProfileData.defaults.bio), findsOneWidget);
+    expect(find.text('Kartu ini sudah dibuka 1 kali'), findsOneWidget);
+    expect(prefs.isDarkMode, isTrue);
+    expect(prefs.debugKeys, containsAll(['open_count', 'is_dark_mode']));
+    expect(prefs.debugKeys, isNot(contains('profile_data')));
+    expect(find.text('Profil dikembalikan ke bawaan'), findsOneWidget);
   });
 
   test(
