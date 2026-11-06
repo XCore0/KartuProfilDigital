@@ -75,6 +75,42 @@ void main() {
     );
   });
 
+  testWidgets('profil hasil edit tetap ada setelah aplikasi dibuka ulang', (
+    WidgetTester tester,
+  ) async {
+    var prefs = await PrefService.init();
+    await tester.pumpWidget(MyApp(prefs: prefs));
+
+    await tester.tap(find.byTooltip('Edit profil'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Nama'),
+      'Nama Baru',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Jabatan'),
+      'Desainer',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Bio'),
+      'Bio yang sudah diperbarui.',
+    );
+    await tester.tap(find.text('Simpan'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nama Baru'), findsOneWidget);
+    expect(find.text('Desainer'), findsOneWidget);
+    expect(find.text('Bio yang sudah diperbarui.'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    prefs = await PrefService.init();
+    await tester.pumpWidget(MyApp(prefs: prefs));
+
+    expect(find.text('Nama Baru'), findsOneWidget);
+    expect(find.text('Desainer'), findsOneWidget);
+    expect(find.text('Bio yang sudah diperbarui.'), findsOneWidget);
+  });
+
   test(
     'penghitung bertambah dan tersimpan setelah aplikasi dibuka ulang',
     () async {

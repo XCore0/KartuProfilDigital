@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/profile_data.dart';
+
 class PrefService {
   PrefService._(this._prefs);
   final SharedPreferences _prefs;
@@ -31,4 +33,22 @@ class PrefService {
       throw StateError('Pengaturan mode gelap gagal disimpan.');
     }
   }
+
+  static const _kProfile = 'profile_data';
+
+  // ---------- Profil ----------
+  ProfileData get profile {
+    final raw = _prefs.getString(_kProfile);
+    if (raw == null) return ProfileData.defaults;
+    return ProfileData.fromJson(raw);
+  }
+
+  Future<void> saveProfile(ProfileData profile) async {
+    final saved = await _prefs.setString(_kProfile, profile.toJson());
+    if (!saved) {
+      throw StateError('Perubahan profil gagal disimpan.');
+    }
+  }
+
+  Future<void> clearProfile() => _prefs.remove(_kProfile);
 }

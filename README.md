@@ -1,8 +1,9 @@
 # Kartu Profil Digital
 
 Aplikasi Flutter sederhana yang menampilkan kartu profil digital Ihsan Hadi
-Nugroho. Kartu berisi nama, profesi, deskripsi singkat, dan jumlah pembukaan
-aplikasi yang tersimpan sehingga terus bertambah setiap aplikasi dibuka.
+Nugroho. Kartu berisi nama, profesi, dan deskripsi singkat yang dapat diedit
+serta tetap tersimpan setelah aplikasi ditutup. Aplikasi juga mencatat jumlah
+pembukaannya dan menyimpan pilihan tema.
 
 ## Menjalankan aplikasi
 
