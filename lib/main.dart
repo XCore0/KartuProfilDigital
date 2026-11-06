@@ -10,9 +10,23 @@ void main() async {
   runApp(MyApp(prefs: prefs));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.prefs});
   final PrefService prefs;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late bool _isDark = widget.prefs.isDarkMode;
+
+  Future<void> _changeTheme(bool value) async {
+    setState(() {
+      _isDark = value;
+    });
+    await widget.prefs.setDarkMode(value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +34,16 @@ class MyApp extends StatelessWidget {
       title: 'Kartu Profil Digital',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorSchemeSeed: Colors.indigo),
-      home: ProfilePage(prefs: prefs),
+      darkTheme: ThemeData(
+        colorSchemeSeed: Colors.indigo,
+        brightness: Brightness.dark,
+      ),
+      themeMode: _isDark ? ThemeMode.dark : ThemeMode.light,
+      home: ProfilePage(
+        prefs: widget.prefs,
+        isDark: _isDark,
+        onThemeChanged: _changeTheme,
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +32,46 @@ void main() {
     expect(
       find.text('Suka membangun aplikasi mobile dan berbagi ilmu.'),
       findsOneWidget,
+    );
+  });
+
+  testWidgets('mengubah dan menyimpan preferensi mode gelap', (
+    WidgetTester tester,
+  ) async {
+    final prefs = await PrefService.init();
+    await tester.pumpWidget(MyApp(prefs: prefs));
+
+    expect(find.byType(SwitchListTile), findsOneWidget);
+    expect(
+      tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+      ThemeMode.light,
+    );
+
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+      ThemeMode.dark,
+    );
+    expect(
+      Theme.of(tester.element(find.byType(Scaffold))).brightness,
+      Brightness.dark,
+    );
+    expect(prefs.isDarkMode, isTrue);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    final reopenedPrefs = await PrefService.init();
+    expect(reopenedPrefs.isDarkMode, isTrue);
+
+    await tester.pumpWidget(MyApp(prefs: reopenedPrefs));
+    expect(
+      tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+      ThemeMode.dark,
+    );
+    expect(
+      tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
+      isTrue,
     );
   });
 

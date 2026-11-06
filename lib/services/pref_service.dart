@@ -19,4 +19,16 @@ class PrefService {
       throw StateError('Penghitung pembukaan aplikasi gagal disimpan.');
     }
   }
+
+  static const _kDarkMode = 'is_dark_mode';
+
+  // ---------- Tema ----------
+  bool get isDarkMode => _prefs.getBool(_kDarkMode) ?? false;
+
+  Future<void> setDarkMode(bool value) async {
+    final saved = await _prefs.setBool(_kDarkMode, value);
+    if (!saved) {
+      throw StateError('Pengaturan mode gelap gagal disimpan.');
+    }
+  }
 }
